@@ -1,9 +1,9 @@
-from InstructorEmbedding import INSTRUCTOR
+from sentence_transformers import SentenceTransformer
 import pandas as pd
 
 def embed_cost_data(df):
-    # Load local model
-    model = INSTRUCTOR("hkunlp/instructor-base")
+    # Stable, lightweight model
+    model = SentenceTransformer("paraphrase-MiniLM-L3-v2")
 
     # Convert each row into a text string
     df["text"] = df.apply(
@@ -11,14 +11,6 @@ def embed_cost_data(df):
         axis=1
     )
 
-    instruction = "Represent the financial cost data for semantic search."
-
-    # InstructorEmbedding requires dict format
-    inputs = [
-        {"instruction": instruction, "input": t}
-        for t in df["text"].tolist()
-    ]
-
-    embeddings = model.encode(inputs)
+    embeddings = model.encode(df["text"].tolist())
 
     return embeddings, df
