@@ -1,16 +1,14 @@
-from sentence_transformers import SentenceTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 
 def embed_cost_data(df):
-    # Stable, lightweight model
-    model = SentenceTransformer("paraphrase-MiniLM-L3-v2")
-
     # Convert each row into a text string
     df["text"] = df.apply(
-        lambda row: f"Month: {row['month']}, Planned: {row['planned_cost']}, Actual: {row['actual_cost']}, Variance: {row['variance']}",
+        lambda row: f"Month {row['month']} planned {row['planned_cost']} actual {row['actual_cost']} variance {row['variance']}",
         axis=1
     )
 
-    embeddings = model.encode(df["text"].tolist())
+    vectorizer = TfidfVectorizer()
+    embeddings = vectorizer.fit_transform(df["text"].tolist()).toarray()
 
     return embeddings, df
